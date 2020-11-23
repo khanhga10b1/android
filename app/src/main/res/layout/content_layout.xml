@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="10dp"
+    android:elevation="8dp"
+    app:cardElevation="10dp"
+    app:cardCornerRadius="10dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <ImageView
+                android:id="@+id/title_image_event"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:contentDescription="image"
+                android:scaleType="centerCrop"
+                android:src="@drawable/bg4" />
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true">
+
+                <ImageView
+                    android:id="@+id/title_image_arrow"
+                    android:layout_width="48dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="2dp"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/arrow_left" />
+
+                <TextView
+                    android:id="@+id/title_txt_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="90dp"
+                    android:text="hello"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/size_text_count" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/title_txt_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/title_image_event"
+                android:layout_marginLeft="@dimen/add_padding"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="@dimen/add_padding"
+                android:gravity="center"
+                android:lines="1"
+                android:textColor="@color/white"
+                android:textSize="@dimen/size_text_name" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ln_visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/content_txt_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/add_padding"
+                android:layout_marginTop="@dimen/add_padding"
+                android:layout_marginRight="@dimen/add_padding"
+                android:lines="1"
+                android:textSize="12pt" />
+
+            <TextView
+                android:id="@+id/content_txt_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/add_padding"
+                android:textSize="7pt" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="@dimen/add_padding"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="@dimen/add_padding"
+                android:layout_marginBottom="10dp"
+                android:src="@color/contentDividerLine" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/add_padding"
+                android:layout_marginRight="@dimen/add_padding">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/content_txt_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="10pt" />
+
+                    <TextView
+                        android:id="@+id/content_annual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="annual"
+                        android:textSize="7pt" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/content_txt_diff_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="end"
+                    android:textSize="9pt" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="@dimen/add_padding"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="@dimen/add_padding"
+                android:layout_marginBottom="14dp"
+                android:src="@color/contentDividerLine" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <Button
+                    android:id="@+id/content_button_modify"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="modify" />
+
+                <Button
+                    android:id="@+id/content_button_delete"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="delete" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

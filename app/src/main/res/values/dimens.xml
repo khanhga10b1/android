@@ -1,0 +1,12 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="add_padding">8dp</dimen>
+    <dimen name="size_text_count">30pt</dimen>
+    <dimen name="size_text_name">10pt</dimen>
+    <dimen name="default_margin">4dp</dimen>
+    <dimen name="item_margin">4dp</dimen>
+    <dimen name="size_date_diff">7pt</dimen>
+    <dimen name="size_text_diff">6pt</dimen>
+</resources>
