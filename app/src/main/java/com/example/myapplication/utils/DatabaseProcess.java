@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.myapplication.entities.Events;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +38,6 @@ public class DatabaseProcess {
         insertKind("other");
     }
 
-    public void dropAllTable() {
-        db.execSQL("DROP TABLE IF EXISTS event");
-        db.execSQL("DROP TABLE IF EXISTS kind");
-    }
-
     public void insertKind(String name) {
         db.execSQL("INSERT INTO kind(kind_name) " +
                 "VALUES('" + name + "');");
@@ -51,23 +48,6 @@ public class DatabaseProcess {
                 + ", event_loop, event_image) "
                 + "VALUES('" + name + "', " + kind + ", '" + date + "', "
                 + loop + ", " + img + ")");
-    }
-
-    public Events getInsertedEvent() {
-        Cursor res = db.rawQuery(
-                "select * from event natural join kind where " +
-                        "event_id=(select max(event_id) from event)"
-                , null);
-        res.moveToFirst();
-        Events event =  new Events(
-                res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_ID))
-                , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_NAME))
-                , res.getInt(res.getColumnIndex(Constants.KIND_COLUMN_ID))
-                , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_DATE))
-                , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_LOOP))
-                , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE)));
-        res.close();
-        return event;
     }
 
     public Events modifyEvent(boolean isCloud, int id, String name, int kind, String date, int loop, int img) {
@@ -146,8 +126,6 @@ public class DatabaseProcess {
         }
         return events;
     }
-    public void deleteWaitingEvent(int id) {
-        db.execSQL("UPDATE event SET event_deleted=1 WHERE event_id=" + id);
-    }
+
 
 }

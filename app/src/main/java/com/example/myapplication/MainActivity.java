@@ -20,8 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.adapter.RecyclerAdapter;
 
+
+import com.example.myapplication.entities.Events;
 import com.example.myapplication.utils.DatabaseProcess;
-import com.example.myapplication.utils.Events;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -32,6 +34,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity
          {
@@ -50,7 +53,6 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
         this.getSupportActionBar().setTitle("hi am khanh");
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.edit().putBoolean(ONETIME,true);
         result = new DrawerBuilder(this)
@@ -71,9 +74,9 @@ public class MainActivity extends AppCompatActivity
                 .withActionBarDrawerToggleAnimated(true)
                 .addDrawerItems(
                         new PrimaryDrawerItem()
-                                .withName("Sync")
+                                .withName("Option 1")
                                 .withDescription("Hi Khanh")
-                                .withIcon(GoogleMaterial.Icon.gmd_sync)
+                                .withIcon(GoogleMaterial.Icon.gmd_account_box)
                                 .withIdentifier(1),
                         new DividerDrawerItem(),
                         new SwitchDrawerItem()
@@ -93,9 +96,6 @@ public class MainActivity extends AppCompatActivity
                 .withSavedInstance(savedInstanceState)
                 .build();
 
-        if (savedInstanceState == null) {
-            result.setSelection(21, false);
-        }
 
 
         databaseProcess = new DatabaseProcess(context);
@@ -108,9 +108,6 @@ public class MainActivity extends AppCompatActivity
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         rvEvent.setLayoutManager(mLayoutManager);
-        rvEvent.setItemAnimator(new DefaultItemAnimator());
-        rvEvent.addItemDecoration(
-                new DividerItemDecoration(this,0));
         rvEvent.setAdapter(recyclerAdapter);
 
 
@@ -190,7 +187,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        //handle the back press
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
         } else {

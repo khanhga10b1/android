@@ -37,7 +37,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'com.ramotion.foldingcell:folding-cell:1.2.3'
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
     testImplementation 'junit:junit:4.+'
@@ -53,8 +52,12 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
-
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+    implementation "com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0"
 }

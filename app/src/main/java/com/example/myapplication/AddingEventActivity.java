@@ -34,17 +34,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.adapter.ImageAdapter;
 import com.example.myapplication.adapter.SpinnerAdapter;
-import com.example.myapplication.items.RecyclerItemClickListener;
 import com.example.myapplication.utils.Constants;
 import com.example.myapplication.utils.DatabaseProcess;
-import com.example.myapplication.utils.Events;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
-
 
 
 public class AddingEventActivity extends AppCompatActivity {
@@ -75,7 +72,6 @@ public class AddingEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_event);
         context = getApplication().getApplicationContext();
         getSupportActionBar().setTitle("Add event");
-
         edtName =  findViewById(R.id.add_name);
         textDate =  findViewById(R.id.add_date);
         textCategory = findViewById(R.id.add_text_category);
@@ -87,10 +83,6 @@ public class AddingEventActivity extends AppCompatActivity {
         toggleHolder = findViewById(R.id.add_toggle_holder);
         backgroundHolder = findViewById(R.id.add_background_holder);
         databaseProcess = new DatabaseProcess(MainActivity.context);
-        Rect displayRectangle = new Rect();
-        Window window = AddingEventActivity.this.getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-
         Cursor cur = databaseProcess.query("select * from kind order by kind_id");
         SpinnerAdapter spinnerAdapter = new SpinnerAdapter(MainActivity.context, cur);
         spinnerCategory.setAdapter(spinnerAdapter);
@@ -100,6 +92,9 @@ public class AddingEventActivity extends AppCompatActivity {
         Date today = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         textDate.setText(sdf.format(today));
+        Rect displayRectangle = new Rect();
+        Window window = AddingEventActivity.this.getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
 
         intent = getIntent();
         if (intent.getStringExtra("name") != null) {
@@ -123,7 +118,6 @@ public class AddingEventActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
             }
 
         });
@@ -134,7 +128,6 @@ public class AddingEventActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 Calendar mCurrentDate = Calendar.getInstance();
                 int mYear = mCurrentDate.get(Calendar.YEAR);
                 int mMonth = mCurrentDate.get(Calendar.MONTH);
@@ -144,7 +137,6 @@ public class AddingEventActivity extends AppCompatActivity {
                         , new DatePickerDialog.OnDateSetListener() {
                     public void onDateSet(DatePicker datepicker, int selectedYear
                             , int selectedMonth, int selectedDay) {
-                        // TODO Auto-generated method stub
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"
                                 , Locale.getDefault());
                         Calendar newDate = Calendar.getInstance();
@@ -166,7 +158,7 @@ public class AddingEventActivity extends AppCompatActivity {
 
                 mpopup = new PopupWindow(popUpView
                         , (int) (displayRectangle.width() * 0.9f)
-                        , (int) (displayRectangle.height() * 0.7f)
+                        , (int) (displayRectangle.height() * 0.2f)
                         , true);
 
                 mpopup.setAnimationStyle(android.R.style.Animation_Dialog);
@@ -174,26 +166,21 @@ public class AddingEventActivity extends AppCompatActivity {
 
                 RecyclerView recyclerView =  popUpView.findViewById(
                         R.id.grid_view);
-                ImageAdapter recyclerAdapter = new ImageAdapter(context);
+                ImageAdapter recyclerAdapter = new ImageAdapter();
                 recyclerView.addItemDecoration(new
                         DividerItemDecoration(context, 0));
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
                 recyclerView.setAdapter(recyclerAdapter);
                 // mainContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.dim_color));
-
-                recyclerView.addOnItemTouchListener(
-                        new RecyclerItemClickListener(context
-                                , new RecyclerItemClickListener.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-                                imageBackground.setImageResource(Constants.background[position]);
-                                currentImage = position;
-                                mainContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
-                                mpopup.dismiss();
-                            }
-                        })
-                );
+                recyclerAdapter.setOnItemCLickListener(new ImageAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        imageBackground.setImageResource(Constants.background[position]);
+                        currentImage = position;
+                        mainContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent));
+                    }
+                });
             }
         });
 
@@ -201,10 +188,6 @@ public class AddingEventActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
-    public void cancelAddEvent(View target) {
-        Intent intent = new Intent(AddingEventActivity.this, MainActivity.class);
-        startActivity(intent);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -232,7 +215,7 @@ public class AddingEventActivity extends AppCompatActivity {
 
 
                     } else {
-                        Events event = databaseProcess.modifyEvent(false
+                                 databaseProcess.modifyEvent(false
                                 , intent.getIntExtra("id", -1)
                                 , edtName.getText().toString()
                                 , spinnerCategory.getSelectedItemPosition() + 1
@@ -241,9 +224,7 @@ public class AddingEventActivity extends AppCompatActivity {
                                 , currentImage);
 
                     }
-                    Intent intent = new Intent(AddingEventActivity.this, MainActivity.class);
-                    intent.putExtra("fromAddingEvent", 1);
-                    startActivity(intent);
+                    onBackPressed();
                 }
                 return true;
             case android.R.id.home:

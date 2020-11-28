@@ -15,18 +15,29 @@ import com.example.myapplication.utils.Constants;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
-    private Context mContext;
-
-    public ImageAdapter(Context c) {
-        mContext = c;
+    private OnItemClickListener mListener;
+    public interface OnItemClickListener{
+        void onItemClick(int position);
+    }
+    public void setOnItemCLickListener(OnItemClickListener mListener){
+        this.mListener = mListener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
 
-        public ViewHolder(View v) {
+        public ViewHolder(View v,OnItemClickListener listener) {
             super(v);
             this.imageView = v.findViewById(R.id.image_item_image);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener!=null){
+                        int position =getAdapterPosition();
+                        listener.onItemClick(position);
+                    }
+                }
+            });
         }
     }
 
@@ -41,7 +52,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 .inflate(R.layout.image_adapter_item, parent, false);
         v.setLayoutParams(new LinearLayout.LayoutParams(parent.getWidth() / 2,
                 parent.getWidth() / 4));
-        return new ViewHolder(v);
+        return new ViewHolder(v,mListener);
     }
 
     @Override

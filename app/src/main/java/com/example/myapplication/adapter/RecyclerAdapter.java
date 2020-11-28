@@ -15,20 +15,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.AddingEventActivity;
-import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.utils.Constants;
+import com.example.myapplication.entities.Events;
 import com.example.myapplication.utils.DatabaseProcess;
-import com.example.myapplication.utils.Events;
 
 import java.util.HashSet;
 import java.util.List;
 
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private DatabaseProcess databaseProcess;
     private List<Events> objects;
     public static Context mContext;
+    private DatabaseProcess databaseProcess;
     private HashSet<Integer> unfoldedIndexes = new HashSet<>();
 
     public RecyclerAdapter() {
@@ -57,6 +56,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         public ViewHolder(View v) {
             super(v);
+            databaseProcess = new DatabaseProcess(mContext);
             txtTitleName =  v.findViewById(R.id.title_txt_name);
             txtTitleCount =  v.findViewById(R.id.title_txt_count);
             imgTitleEvent =  v.findViewById(R.id.title_image_event);
@@ -64,7 +64,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             btnContentDelete =  v.findViewById(R.id.content_button_delete);
             btnContentModify = v.findViewById(R.id.content_button_modify);
             txtContentAnnual =  v.findViewById(R.id.content_annual);
-            databaseProcess = new DatabaseProcess(MainActivity.context);
             txtContentName = v.findViewById(R.id.content_txt_name);
             txtContentDate =  v.findViewById(R.id.content_txt_date);
             txtContentDiffDate =  v.findViewById(R.id.content_txt_diff_date);
@@ -173,7 +172,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         viewHolder.txtContentDate.setText(listViewItem.getDate());
         viewHolder.txtContentName.setText(listViewItem.getName());
         try {
-            viewHolder.txtContentDiffDate.setText(listViewItem.getDiffString(1));
+            viewHolder.txtContentDiffDate.setText(String.valueOf(listViewItem.getDiff()));
         } catch (Exception e) {
             e.printStackTrace();
         }
