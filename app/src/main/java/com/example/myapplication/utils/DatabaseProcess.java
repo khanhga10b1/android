@@ -21,7 +21,8 @@ public class DatabaseProcess {
                 "create table if not exists event" +
                         "(event_id integer primary key autoincrement, event_name text, " +
                         "kind_id integer, event_date text, event_loop integer" +
-                        ", event_image integer);"
+                        ", event_notification integer, event_image integer, event_state integer" +
+                        ", event_id_sync text, event_deleted integer);"
         );
         db.execSQL(
                 "create table if not exists kind" +
@@ -38,22 +39,49 @@ public class DatabaseProcess {
         insertKind("other");
     }
 
+    public void dropAllTable() {
+        db.execSQL("DROP TABLE IF EXISTS event");
+        db.execSQL("DROP TABLE IF EXISTS kind");
+    }
+
     public void insertKind(String name) {
         db.execSQL("INSERT INTO kind(kind_name) " +
                 "VALUES('" + name + "');");
     }
 
-    public void insertEvent(String name, int kind, String date, int loop, int img) {
+    public void insertEvent(String name, int kind, String date, int loop, int img
+            , int state, String sync, int deleted) {
         db.execSQL("INSERT INTO event(event_name, kind_id, event_date"
-                + ", event_loop, event_image) "
+                + ", event_loop, event_image, event_state, event_id_sync, event_deleted) "
                 + "VALUES('" + name + "', " + kind + ", '" + date + "', "
-                + loop + ", " + img + ")");
+                + loop + ", " + img + ", " + state + ", '" + sync + "', " + deleted + ")");
     }
 
-    public Events modifyEvent(boolean isCloud, int id, String name, int kind, String date, int loop, int img) {
+    public Events getInsertedEvent() {
+        Cursor res = db.rawQuery(
+                "select * from event natural join kind where " +
+                        "event_id=(select max(event_id) from event)"
+                , null);
+        res.moveToFirst();
+        Events event =  new Events(
+                res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_ID))
+                , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_NAME))
+                , res.getInt(res.getColumnIndex(Constants.KIND_COLUMN_ID))
+                , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_DATE))
+                , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_LOOP))
+                , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE))
+                , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_STATE))
+                , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_ID_SYNC))
+                , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_DELETED)));
+        res.close();
+        return event;
+    }
+
+    public Events modifyEvent(boolean isCloud, int id, String name, int kind, String date, int loop, int img
+            , int state) {
         db.execSQL("UPDATE event SET event_name ='" + name + "', kind_id=" + kind
                 + ", event_date='" + date + "', event_loop=" + loop + ", event_image=" + img
-                +" WHERE event_id=" + id);
+                + ", event_state= " + state + " WHERE event_id=" + id);
         if(!isCloud) {
             Cursor res =
                     db.rawQuery("select * from event natural join kind where event_id=" + id, null);
@@ -64,17 +92,34 @@ public class DatabaseProcess {
                     , res.getInt(res.getColumnIndex(Constants.KIND_COLUMN_ID))
                     , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_DATE))
                     , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_LOOP))
-                    , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE)));
+                    , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE))
+                    , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_STATE))
+                    , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_ID_SYNC))
+                    , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_DELETED)));
             res.close();
             return event;
         } else return null;
     }
 
+    public void deleteWaitingEvent(int id) {
+        db.execSQL("UPDATE event SET event_deleted=1, event_state=0 WHERE event_id=" + id);
+    }
+
+    public void updateState(int id) {
+        db.execSQL("UPDATE event SET event_state=1 WHERE event_id=" + id);
+    }
 
     public void deleteEvent(int id) {
         db.execSQL("DELETE FROM event WHERE event_id=" + id);
     }
 
+    public void addExample() throws Exception {
+        insertEvent("Yêu xa nhé!", 1, "2016-05-14", 0, 2, Constants.EVENT_STATE_WRITE, "", 0);
+        insertEvent("Có!", 1, "2012-01-05", 0, 1, Constants.EVENT_STATE_WRITE, "", 0);
+        insertEvent("Sinh Nhật Lợn", 5, "1995-02-05", 1, 3, Constants.EVENT_STATE_WRITE, "", 0);
+        insertEvent("Sinh Nhật Chó", 3, "1995-09-16", 1, 4, Constants.EVENT_STATE_WRITE, "", 0);
+        insertEvent("choi", 4, "2016-06-20", 0, 1, Constants.EVENT_STATE_WRITE, "", 0);
+    }
 
     public Cursor query(String query) {
         Cursor res = db.rawQuery(query, null);
@@ -95,7 +140,10 @@ public class DatabaseProcess {
                             , res.getInt(res.getColumnIndex(Constants.KIND_COLUMN_ID))
                             , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_DATE))
                             , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_LOOP))
-                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE)));
+                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE))
+                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_STATE))
+                            , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_ID_SYNC))
+                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_DELETED)));
                     events.add(event);
                     res.moveToNext();
                 }
@@ -115,7 +163,10 @@ public class DatabaseProcess {
                             , res.getInt(res.getColumnIndex(Constants.KIND_COLUMN_ID))
                             , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_DATE))
                             , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_LOOP))
-                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE)));
+                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_IMAGE))
+                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_STATE))
+                            , res.getString(res.getColumnIndex(Constants.EVENT_COLUMN_ID_SYNC))
+                            , res.getInt(res.getColumnIndex(Constants.EVENT_COLUMN_DELETED)));
                     events.add(event);
                     res.moveToNext();
                 }
@@ -127,5 +178,8 @@ public class DatabaseProcess {
         return events;
     }
 
-
+    public void updateStateAndSyncId(int id, int state, String sync) {
+        db.execSQL("UPDATE event SET event_state=" + state + ", event_id_sync='"
+                + sync + "' WHERE event_id=" + id);
+    }
 }

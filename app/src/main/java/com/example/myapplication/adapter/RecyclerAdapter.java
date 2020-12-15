@@ -2,7 +2,6 @@ package com.example.myapplication.adapter;
 
 import android.content.Context;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.AddingEventActivity;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.items.RecyclerViewClickListener;
 import com.example.myapplication.utils.Constants;
 import com.example.myapplication.entities.Events;
-import com.example.myapplication.utils.DatabaseProcess;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,16 +26,16 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
     private List<Events> objects;
     public static Context mContext;
-    private DatabaseProcess databaseProcess;
     private HashSet<Integer> unfoldedIndexes = new HashSet<>();
+    private static RecyclerViewClickListener itemListener;
 
     public RecyclerAdapter() {
     }
 
-    public RecyclerAdapter(Context context, List<Events> cur) {
-        this.mContext = context;
-        this.objects = cur;
-
+    public RecyclerAdapter(Context context, List<Events> cur, RecyclerViewClickListener listener) {
+        mContext = context;
+        objects = cur;
+        itemListener = listener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -56,7 +55,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
         public ViewHolder(View v) {
             super(v);
-            databaseProcess = new DatabaseProcess(mContext);
             txtTitleName =  v.findViewById(R.id.title_txt_name);
             txtTitleCount =  v.findViewById(R.id.title_txt_count);
             imgTitleEvent =  v.findViewById(R.id.title_image_event);
@@ -64,6 +62,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             btnContentDelete =  v.findViewById(R.id.content_button_delete);
             btnContentModify = v.findViewById(R.id.content_button_modify);
             txtContentAnnual =  v.findViewById(R.id.content_annual);
+
             txtContentName = v.findViewById(R.id.content_txt_name);
             txtContentDate =  v.findViewById(R.id.content_txt_date);
             txtContentDiffDate =  v.findViewById(R.id.content_txt_diff_date);
@@ -84,23 +83,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             btnContentDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    databaseProcess.deleteEvent(objects.get(getAdapterPosition()).getId());
-                    objects = removeAt(getAdapterPosition());
+                    itemListener.recyclerViewListClicked(2, v,getAdapterPosition());
                 }
             });
             btnContentModify.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Events listViewItem = objects.get(getAdapterPosition());
-                    Intent intent = new Intent(mContext, AddingEventActivity.class);
-                    intent.putExtra("id", listViewItem.getId());
-                    intent.putExtra("name", listViewItem.getName());
-                    intent.putExtra("loop", listViewItem.getLoop());
-                    intent.putExtra("spinner", listViewItem.getKind() - 1);
-                    intent.putExtra("date", listViewItem.getDate());
-                    intent.putExtra("img", listViewItem.getImg());
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
+                    itemListener.recyclerViewListClicked(1, v, getAdapterPosition());
                 }
             });
         }
@@ -142,37 +131,34 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
 
 
-        try {
-            viewHolder.txtTitleCount.setText(listViewItem.getDiff());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
         if (listViewItem.getDiff() > 0) {
-
+            if (MainActivity.sharedPreferences.getBoolean(MainActivity.DISPLAY_DAY, true))
+                viewHolder.txtTitleCount.setText(String.valueOf(listViewItem.getDiff()));
+            else {
                 try {
-                    viewHolder.txtTitleCount.setText(String.valueOf(listViewItem.getDiff()));
+                    viewHolder.txtTitleCount.setText(listViewItem.getDiffString(0));
                 } catch (Exception e) {
                 }
-
+            }
             viewHolder.imgTitleArrow.setImageResource(R.drawable.arrow_right);
         } else if (listViewItem.getDiff() == 0) {
             viewHolder.imgTitleArrow.setVisibility(View.GONE);
-            viewHolder.txtTitleCount.setText(String.valueOf(listViewItem.getDiff()));
+            viewHolder.txtTitleCount.setText(String.valueOf(0));
         } else {
-
+            if (MainActivity.sharedPreferences.getBoolean(MainActivity.DISPLAY_DAY, true))
+                viewHolder.txtTitleCount.setText(String.valueOf(-listViewItem.getDiff()));
+            else {
                 try {
-                    viewHolder.txtTitleCount.setText(String.valueOf(-listViewItem.getDiff()));
+                    viewHolder.txtTitleCount.setText(listViewItem.getDiffString(0));
                 } catch (Exception e) {
                 }
+            }
         }
-
 
         viewHolder.txtContentDate.setText(listViewItem.getDate());
         viewHolder.txtContentName.setText(listViewItem.getName());
         try {
-            viewHolder.txtContentDiffDate.setText(String.valueOf(listViewItem.getDiff()));
+            viewHolder.txtContentDiffDate.setText(listViewItem.getDiffString(1));
         } catch (Exception e) {
             e.printStackTrace();
         }
